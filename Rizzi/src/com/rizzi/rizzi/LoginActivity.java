@@ -12,7 +12,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -38,7 +37,7 @@ import com.parse.ParseUser;
  * @author David
  *
  */
-public class LoginActivity extends Activity {
+public class LoginActivity extends FragmentActivity {
 	
 	private static final String TAG = "LoginActivity";
 	private LoginFragment loginFragment;
@@ -46,7 +45,7 @@ public class LoginActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getFragmentManager().beginTransaction();
+        
         if (savedInstanceState == null){
         	loginFragment = new LoginFragment();
         	getSupportFragmentManager()
