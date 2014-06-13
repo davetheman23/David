@@ -45,7 +45,7 @@ public class LoginActivity extends FragmentActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        
+        int abc = 0;
         if (savedInstanceState == null){
         	loginFragment = new LoginFragment();
         	getSupportFragmentManager()
