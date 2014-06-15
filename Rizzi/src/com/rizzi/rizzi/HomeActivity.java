@@ -38,6 +38,7 @@ import com.google.android.gms.maps.GoogleMap.OnMapLongClickListener;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.CameraPosition.Builder;
+import com.google.android.gms.maps.model.CameraPositionCreator;
 import com.google.android.gms.maps.model.LatLng;
 import com.parse.ParseACL;
 import com.parse.ParseException;
@@ -106,8 +107,8 @@ public class HomeActivity extends Activity implements
 			}
 		});
 		
+		// set a map long click listener
 		mGoogleMap.setOnMapLongClickListener(new OnMapLongClickListener() {
-			
 			private PostPopupFragment postDialog = null;
 			
 			@Override
@@ -231,7 +232,7 @@ public class HomeActivity extends Activity implements
 	
 
 	
-	/*
+	/**
 	   * Handle results returned to this Activity by other Activities started with
 	   * startActivityForResult(). In particular, the method onConnectionFailed() in
 	   * LocationUpdateRemover and LocationUpdateRequester may call startResolutionForResult() to start
@@ -310,21 +311,19 @@ public class HomeActivity extends Activity implements
             // add a marker to the location
             //mMyLocationMarker = mGoogleMap.addMarker(new MarkerOptions()
             //						.position(CIU).title(CIU.toString()));
-            
+            CameraPosition cameraPosition 
+	    		= new Builder()
+	    			.target(CIU)
+	    			.zoom(15)
+	    			.tilt(45)
+	    			.build();
+            CameraUpdate camUpdate = CameraUpdateFactory
+            				.newCameraPosition(cameraPosition);
             	//move map camera to my location, either animate or non-animate 
 	            if(animateToLocationWhenFound){
-	            	CameraPosition cameraPosition 
-	            		= new Builder()
-	            			.target(CIU)
-	            			.zoom(15)
-	            			.build();
-	            	mGoogleMap.animateCamera(CameraUpdateFactory
-	            						.newCameraPosition(cameraPosition));
+	            	mGoogleMap.animateCamera(camUpdate);
 	            }else{
-	            	CameraUpdate center = CameraUpdateFactory.newLatLng(CIU);
-	                CameraUpdate zoom = CameraUpdateFactory.zoomTo(10);
-	                mGoogleMap.moveCamera(center);
-	                mGoogleMap.moveCamera(zoom);
+	                mGoogleMap.moveCamera(camUpdate);
 	            }
             }
     		
@@ -533,6 +532,7 @@ public class HomeActivity extends Activity implements
 		private Location mFromLocation, mToLocation;
 		private TextView tv_FromAddress = null;
 		private TextView tv_ToAddress = null;
+		private ProfilePictureView userProfilePictureView = null;
 		
 		//private final String addressFormat = Resources.getSystem()
 		//							.getString(R.string.address_output_string);
@@ -575,15 +575,14 @@ public class HomeActivity extends Activity implements
 			dialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
 			dialog.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
 										WindowManager.LayoutParams.FLAG_FULLSCREEN);
-			dialog.getWindow().setContentView(R.layout.frag_ridepost);
-			/*dialog.getWindow().setBackgroundDrawable(  
-				    new ColorDrawable(Color.TRANSPARENT));*/  
+			dialog.getWindow().setContentView(R.layout.frag_ridepost_p1);
+			
 			
 			dialog.show();
 			
 			
 			
-			ProfilePictureView userProfilePictureView = (ProfilePictureView) dialog
+			userProfilePictureView = (ProfilePictureView) dialog
 										.findViewById(R.id.frag_ridepost_user_pic);
 			tv_FromAddress = (TextView) dialog.findViewById(
 												R.id.frag_ridepsot_tv_from_address); 
