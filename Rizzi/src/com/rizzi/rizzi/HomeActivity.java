@@ -97,7 +97,6 @@ public class HomeActivity extends Activity implements
 						.findFragmentById(R.id.activity_home_mappane))
 						.getMap();
 		
-		
 		// define actions for camera change
 		mGoogleMap.setOnCameraChangeListener(new OnCameraChangeListener() {
 			@Override
