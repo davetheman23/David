@@ -1,4 +1,4 @@
-package com.rizzi.rizzi.utils;
+package com.rizzi.rizzi.parseclasses;
 
 import com.parse.ParseClassName;
 import com.parse.ParseGeoPoint;
@@ -6,7 +6,7 @@ import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
-@ParseClassName("ModelRidePosts1")
+@ParseClassName("ModelRidePosts")
 public class ModelRidePosts extends ParseObject {
 	public static final String KEY_USER = "user";
 	
@@ -38,13 +38,27 @@ public class ModelRidePosts extends ParseObject {
 		put(KEY_RIDESHARER2, user);
 	}
 	
+	public CustomGeoPoints getOrigin(){
+		return (CustomGeoPoints) getParseObject(KEY_ORIGIN);
+	}
+	
+	public void setOrigin(CustomGeoPoints origin){
+		put(KEY_ORIGIN, origin);
+	}
+	public CustomGeoPoints getDestination(){
+		return (CustomGeoPoints) getParseObject(KEY_DESTINATION);
+	}
+	
+	public void setDestination(CustomGeoPoints destination){
+		put(KEY_DESTINATION, destination);
+	}
+	/*
 	public ParseGeoPoint getOrigin(){
 		return getParseGeoPoint(KEY_ORIGIN);
 	}
 	public void setOrigin(ParseGeoPoint origin){
 		put(KEY_ORIGIN, origin);
-	}
-	
+	}*/
 	/*public ParseGeoPoint getDestination(){
 		return getParseGeoPoint(KEY_DESTINATION);
 	}

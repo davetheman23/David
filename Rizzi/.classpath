@@ -6,7 +6,6 @@
 	<classpathentry exported="true" kind="lib" path="libs/Parse-1.5.1.jar"/>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="gen"/>
-	<classpathentry kind="lib" path="/FacebookSDK/libs/android-support-v4.jar"/>
 	<classpathentry exported="true" kind="lib" path="/google-play-services_lib/libs/google-play-services.jar"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>

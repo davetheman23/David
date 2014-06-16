@@ -110,7 +110,7 @@ public class UserProfileActivity extends Activity {
 								// Save the user profile info in a user property
 								ParseUser currentUser = ParseUser
 										.getCurrentUser();
-								//currentUser.put("profile", userProfile);
+								currentUser.put("profile", userProfile);
 								currentUser.saveInBackground();
 
 								// Show the user info

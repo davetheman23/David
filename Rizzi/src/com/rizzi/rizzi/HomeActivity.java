@@ -1,6 +1,8 @@
 package com.rizzi.rizzi;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -44,10 +46,13 @@ import com.parse.ParseACL;
 import com.parse.ParseException;
 import com.parse.ParseFacebookUtils;
 import com.parse.ParseGeoPoint;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
+import com.rizzi.rizzi.parseclasses.CustomGeoPoints;
+import com.rizzi.rizzi.parseclasses.ModelRidePosts;
 import com.rizzi.rizzi.utils.LocationUtils;
-import com.rizzi.rizzi.utils.ModelRidePosts;
 import com.rizzi.rizzi.utils.RizziApplication;
 
 public class HomeActivity extends Activity implements 
@@ -135,27 +140,42 @@ public class HomeActivity extends Activity implements
 				postDialog.show(getFragmentManager(), TAG);
 
 				
+				 
 				final ParseGeoPoint orig = getParseGeoPointFromLocation(origin);
+				CustomGeoPoints _orig_t = new CustomGeoPoints();
+				_orig_t.setGeoPoint(orig);
 				
 				final ParseGeoPoint dest = getParseGeoPointFromLocation(destination);
+				CustomGeoPoints _dest_t = new CustomGeoPoints();
+				_dest_t.setGeoPoint(dest);
+				
 
 				ModelRidePosts ridePosts = new ModelRidePosts();
 				ridePosts.setUser(ParseUser.getCurrentUser());
 				ridePosts.setRideSharer1(ParseUser.getCurrentUser());
-				ridePosts.setOrigin(orig);
-				//ridePosts.setDestination(dest);
+				ridePosts.setOrigin(_orig_t);
+				ridePosts.setDestination(_dest_t);
+				
+				List<ParseObject> postObjects = new ArrayList<ParseObject>();
+				postObjects.add(_orig_t);
+				postObjects.add(_dest_t);
+				postObjects.add(ridePosts);
 				
 				ParseACL acl = new ParseACL();
 				 acl.setPublicReadAccess(true);
-				 ridePosts.setACL(acl);
-				ridePosts.saveInBackground(new SaveCallback() {
+				ridePosts.setACL(acl);
+				ParseObject.saveAllInBackground(postObjects, new SaveCallback(){
+
 					@Override
 					public void done(ParseException e) {
+						String message ="Post Succeeded";
 						if (e != null){
-							Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+							message = e.getMessage();
 						}
+						Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG).show();
 					}
-				});;
+					
+				});
 			}
 		});
 		
@@ -187,8 +207,6 @@ public class HomeActivity extends Activity implements
         return true;
     }
 	
-
-
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()){
