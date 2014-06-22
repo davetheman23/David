@@ -8,7 +8,7 @@ import com.parse.ParseObject;
 public class CustomGeoPoints extends ParseObject {
 	
 	
-	public static final String KEY_PARSE_GEO_POINT = "ParseGeoPoint";
+	public static final String KEY_PARSE_GEO_POINT = "parseGeoPoint";
 
 	public ParseGeoPoint getGeoPoint(){
 		return getParseGeoPoint(KEY_PARSE_GEO_POINT);

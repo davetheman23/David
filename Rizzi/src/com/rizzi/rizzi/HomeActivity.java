@@ -1,6 +1,7 @@
 package com.rizzi.rizzi;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -23,6 +24,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Button;
+import android.widget.RadioButton;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -40,14 +44,12 @@ import com.google.android.gms.maps.GoogleMap.OnMapLongClickListener;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.CameraPosition.Builder;
-import com.google.android.gms.maps.model.CameraPositionCreator;
 import com.google.android.gms.maps.model.LatLng;
 import com.parse.ParseACL;
 import com.parse.ParseException;
 import com.parse.ParseFacebookUtils;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
-import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 import com.rizzi.rizzi.parseclasses.CustomGeoPoints;
@@ -112,72 +114,7 @@ public class HomeActivity extends Activity implements
 		});
 		
 		// set a map long click listener
-		mGoogleMap.setOnMapLongClickListener(new OnMapLongClickListener() {
-			private PostPopupFragment postDialog = null;
-			
-			@Override
-			public void onMapLongClick(LatLng point) {
-				
-				Location destination = new Location(RizziApplication.APPTAG);
-				destination.setLatitude(point.latitude);
-				destination.setLongitude(point.longitude);
-				destination.setTime(new Date().getTime());
-				
-				Location origin = (mCurrentLocation == null) ? 
-											mLastLocation : mCurrentLocation;
-				if (origin == null){
-					Toast.makeText(HomeActivity.this,
-				            "Please try again after your location appears on the map.", 
-				            Toast.LENGTH_LONG)
-				            .show();
-				        return;
-				}
-				
-				postDialog = new PostPopupFragment();
-				
-				postDialog.setParameters(origin, destination);
-				
-				postDialog.show(getFragmentManager(), TAG);
-
-				
-				 
-				final ParseGeoPoint orig = getParseGeoPointFromLocation(origin);
-				CustomGeoPoints _orig_t = new CustomGeoPoints();
-				_orig_t.setGeoPoint(orig);
-				
-				final ParseGeoPoint dest = getParseGeoPointFromLocation(destination);
-				CustomGeoPoints _dest_t = new CustomGeoPoints();
-				_dest_t.setGeoPoint(dest);
-				
-
-				ModelRidePosts ridePosts = new ModelRidePosts();
-				ridePosts.setUser(ParseUser.getCurrentUser());
-				ridePosts.setRideSharer1(ParseUser.getCurrentUser());
-				ridePosts.setOrigin(_orig_t);
-				ridePosts.setDestination(_dest_t);
-				
-				List<ParseObject> postObjects = new ArrayList<ParseObject>();
-				postObjects.add(_orig_t);
-				postObjects.add(_dest_t);
-				postObjects.add(ridePosts);
-				
-				ParseACL acl = new ParseACL();
-				 acl.setPublicReadAccess(true);
-				ridePosts.setACL(acl);
-				ParseObject.saveAllInBackground(postObjects, new SaveCallback(){
-
-					@Override
-					public void done(ParseException e) {
-						String message ="Post Succeeded";
-						if (e != null){
-							message = e.getMessage();
-						}
-						Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG).show();
-					}
-					
-				});
-			}
-		});
+		mGoogleMap.setOnMapLongClickListener(longClickListener);
 		
 		/*
 		 *  Create a new global location parameters object, and set request params
@@ -199,6 +136,34 @@ public class HomeActivity extends Activity implements
 		
 	}
 	
+	OnMapLongClickListener longClickListener = new OnMapLongClickListener() {
+		private PostPopupFragment postDialog = null;
+		
+		@Override
+		public void onMapLongClick(LatLng point) {
+			// obtain a location object where the user clicked as destination
+			Location destination = new Location(RizziApplication.APPTAG);
+			destination.setLatitude(point.latitude);
+			destination.setLongitude(point.longitude);
+			destination.setTime(new Date().getTime());
+			
+			// the the current user location as the origin
+			Location origin = (mCurrentLocation == null) ? 
+										mLastLocation : mCurrentLocation;
+			if (origin == null){
+				Toast.makeText(HomeActivity.this,
+			            "Please try again after your location appears on the map.", 
+			            Toast.LENGTH_LONG)
+			            .show();
+			        return;
+			}
+			
+			// create a new ride post fragment
+			postDialog = new PostPopupFragment();
+			postDialog.setParameters(origin, destination);
+			postDialog.show(getFragmentManager(), TAG);
+		}
+	};
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -477,22 +442,6 @@ public class HomeActivity extends Activity implements
 		mLastLocation = location;
 	}	
 	
-	private float getDistanceBetweenInMeters(Location start, Location end){
-		float[] results = new float[]{-1,0,0};
-		Location.distanceBetween(mCurrentLocation.getLatitude(), 
-				 mCurrentLocation.getLongitude(),
-				 mLastLocation.getLatitude(),
-				 mLastLocation.getLongitude(),
-				 results);
-		Log.d(TAG, "distance between start and end locations are: " + results[0]);
-		return results[0];
-	}
-	
-	private ParseGeoPoint getParseGeoPointFromLocation(Location location){
-		return new ParseGeoPoint(mCurrentLocation.getLatitude(), 
-								mCurrentLocation.getLongitude());
-	}
-	
 	/**
      * Show a dialog returned by Google Play services for the
      * connection error code
@@ -518,6 +467,22 @@ public class HomeActivity extends Activity implements
 	      errorFragment.show(getFragmentManager(), "Location Updates");
 	    }
 	  }
+	  
+	  private float getDistanceBetweenInMeters(Location start, Location end){
+			float[] results = new float[]{-1,0,0};
+			Location.distanceBetween(start.getLatitude(), 
+					 start.getLongitude(),
+					 end.getLatitude(),
+					 end.getLongitude(),
+					 results);
+			Log.d(TAG, "distance between start and end locations are: " + results[0]);
+			return results[0];
+		}
+		
+		private static ParseGeoPoint getParseGeoPointFromLocation(Location location){
+			return new ParseGeoPoint(location.getLatitude(), 
+									location.getLongitude());
+		}
 
 	/**
      * Define a DialogFragment to display the error dialog generated in
@@ -547,9 +512,15 @@ public class HomeActivity extends Activity implements
 	 */
 	public static class PostPopupFragment extends DialogFragment{
 		private Location mFromLocation, mToLocation;
+		private List<ParseObject> mPostObjects = null;
+		private RadioButton rb_ride, rb_either, rb_drive;
 		private TextView tv_FromAddress = null;
 		private TextView tv_ToAddress = null;
 		private ProfilePictureView userProfilePictureView = null;
+		private Spinner sp_StartTime = null;
+		
+		private static final long MILLISECONDS_IN_SECOND = 1000;
+		private static final long SECONDS_IN_MINUTE = 60;
 		
 		//private final String addressFormat = Resources.getSystem()
 		//							.getString(R.string.address_output_string);
@@ -568,46 +539,34 @@ public class HomeActivity extends Activity implements
 
 		@Override
 		public Dialog onCreateDialog(Bundle savedInstanceState) {
-			/*AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-			builder
-				.setPositiveButton("Post", new OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						
-					}
-				})
-				.setNegativeButton("Cancel", new OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						dismiss();
-					}
-				});
-			
-			AlertDialog alertDialog = builder.create();
-			
-			final Dialog dialog = (Dialog)alertDialog;*/
-			
+			// create a new empty dialog on the activity
 			final Dialog dialog = new Dialog(getActivity());
-			
+			// initialize dialog box basic configurations
 			dialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
 			dialog.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
 										WindowManager.LayoutParams.FLAG_FULLSCREEN);
 			dialog.getWindow().setContentView(R.layout.frag_ridepost_p1);
-			
-			
+			// display dialog box to user
 			dialog.show();
 			
-			
-			
+			/*
+			 * get references for all the widgets on the dialog box
+			 */
 			userProfilePictureView = (ProfilePictureView) dialog
 										.findViewById(R.id.frag_ridepost_user_pic);
 			tv_FromAddress = (TextView) dialog.findViewById(
-												R.id.frag_ridepsot_tv_from_address); 
+												R.id.frag_ridepost_tv_from_address); 
 			tv_ToAddress = (TextView) dialog.findViewById(
-												R.id.frag_ridepsot_tv_to_address);
+												R.id.frag_ridepost_tv_to_address);
+			sp_StartTime = (Spinner) dialog.findViewById(R.id.frag_ridepost_start_time);
+			rb_ride = (RadioButton)dialog.findViewById(R.id.frag_ridepost_radio_ride);
+			rb_either = (RadioButton)dialog.findViewById(R.id.frag_ridepost_radio_either);
+			rb_drive = (RadioButton)dialog.findViewById(R.id.frag_ridepost_radio_drive);
+			
+			// initialize address boxes
 			tv_FromAddress.setText("Loading Address ...");
 			tv_ToAddress.setText("Loading Address ...");
-			
+			// get address of origin in a background thread, display once done
 			new LocationUtils.GetAddressTask(getActivity(), addressFormat) {
 				@Override
 				protected void onPostExecute(String formmatedAddress) {
@@ -616,6 +575,7 @@ public class HomeActivity extends Activity implements
 				}
 			}.execute(mToLocation);
 			
+			// get address of destination in background thread, display once done
 			new LocationUtils.GetAddressTask(getActivity(), addressFormat) {
 				@Override
 				protected void onPostExecute(String formmatedAddress) {
@@ -623,8 +583,10 @@ public class HomeActivity extends Activity implements
 				}
 			}.execute(mFromLocation);
 			
-			
+			// get the the current Parseuser, 
 			ParseUser currentUser = ParseUser.getCurrentUser();
+			// here require the Parseuser has a profile field that is saved once
+			// the user first logged in
 			if (currentUser.get("profile") != null) {
 				JSONObject userProfile = currentUser.getJSONObject("profile");
 				try {
@@ -640,15 +602,106 @@ public class HomeActivity extends Activity implements
 				}
 			}
 			
+			// set a listener for the post button
+			Button postButton = (Button) dialog.findViewById(
+												R.id.frag_ridepost_post);
+			postButton.setOnClickListener(new View.OnClickListener() {
+				@Override
+				public void onClick(View v) {
+					
+					mPostObjects = getPostData();
+
+					if (mPostObjects == null){
+						return;
+					}
+					/* 
+					 * Note: saveAllinBAckground will limit the number of requests made
+					 * to the server, 
+					 */
+					ParseObject.saveAllInBackground(mPostObjects, new SaveCallback(){
+						@Override
+						public void done(ParseException e) {
+							String message ="Post Succeeded";
+							if (e != null){
+								message = e.getMessage();
+							}
+							Toast.makeText(getActivity(), message, Toast.LENGTH_LONG).show();
+						}
+					});
+				}
+			});
 			return dialog;
 		}
-
-		@Override
-		public View onCreateView(LayoutInflater inflater, ViewGroup container,
-				Bundle savedInstanceState) {
-			return super.onCreateView(inflater, container, savedInstanceState);
+		/**
+		 * fetch from the ui the user inputs for a ride post
+		 * @return a list object that can be used in 
+		 *         {@link ParseObject#saveAllInBackground(List)}
+		 */
+		private List<ParseObject> getPostData(){
+			// get the trip planned start time
+			Date startTime = null;
+			int startTimeSelPos = sp_StartTime.getSelectedItemPosition();
+			if (startTimeSelPos == Spinner.INVALID_POSITION){
+				// TODO alert user to select a start time
+			}else{
+				startTime = getStartTimeinDate(startTimeSelPos);
+			}
+			
+			// get the ride preference
+			int ridePreference = ModelRidePosts.PREF_EITHER;
+			if (rb_drive.isChecked()){
+				ridePreference = ModelRidePosts.PREF_DRIVE;
+			}else if (rb_ride.isChecked()){
+				ridePreference = ModelRidePosts.PREF_RIDE;
+			}
+			
+			// set a geopoint object to and its wrapper class
+			final ParseGeoPoint orig = getParseGeoPointFromLocation(mFromLocation);
+			CustomGeoPoints _orig_t = new CustomGeoPoints();
+			_orig_t.setGeoPoint(orig);
+			final ParseGeoPoint dest = getParseGeoPointFromLocation(mToLocation);
+			CustomGeoPoints _dest_t = new CustomGeoPoints();
+			_dest_t.setGeoPoint(dest);
+			
+			/*
+			 * create a ride post class, the class needs to be defined in its own
+			 * java file and needs to be registered in RizziApplication.java 
+			 */
+			ModelRidePosts ridePosts = new ModelRidePosts();
+			ridePosts.setUser(ParseUser.getCurrentUser());
+			ridePosts.setRideSharer1(ParseUser.getCurrentUser());
+			ridePosts.setOrigin(_orig_t);
+			ridePosts.setDestination(_dest_t);
+			ridePosts.setStartTime(startTime);
+			ridePosts.setRidePreference(ridePreference);
+			// set read/write permission for this ride post record
+			ParseACL acl = new ParseACL();
+			 acl.setPublicReadAccess(true);
+			ridePosts.setACL(acl);
+			
+			// create list to save all Parse objects at the same time
+			List<ParseObject> postObjects = new ArrayList<ParseObject>();
+			postObjects.add(_orig_t);
+			postObjects.add(_dest_t);
+			postObjects.add(ridePosts);
+			
+			return postObjects;
 		}
 		
+		/**
+		 * get a start time based on the spinner selection 
+		 * @param position the item selection (starting from 0)
+		 * @return a date of start time/leave time from origin location
+		 */
+		private Date getStartTimeinDate(int position){
+			int[] options = getResources().getIntArray(
+									R.array.start_time_options_in_mins);
+			long millisecFromNow = options[position] * SECONDS_IN_MINUTE 
+												* MILLISECONDS_IN_SECOND;
+			Date now = Calendar.getInstance().getTime();
+			Date starttime = new Date(now.getTime() + millisecFromNow);
+			return starttime;
+		}		
 		
 	}
 

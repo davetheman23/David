@@ -1,5 +1,7 @@
 package com.rizzi.rizzi.parseclasses;
 
+import java.util.Date;
+
 import com.parse.ParseClassName;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
@@ -8,6 +10,10 @@ import com.parse.ParseUser;
 
 @ParseClassName("ModelRidePosts")
 public class ModelRidePosts extends ParseObject {
+	public static int PREF_RIDE = 0;
+	public static int PREF_EITHER = 5;
+	public static int PREF_DRIVE = 10;
+	
 	public static final String KEY_USER = "user";
 	
 	public static final String KEY_RIDESHARER1 = "ridesharer1";
@@ -17,6 +23,10 @@ public class ModelRidePosts extends ParseObject {
 	public static final String KEY_ORIGIN = "orig";
 	
 	public static final String KEY_DESTINATION = "dest";
+	
+	public static final String KEY_START_TIME = "startTime";
+	
+	public static final String KEY_RIDE_PREFERENCE = "ridePref";
 	
 	public ParseUser getUser(){
 		return getParseUser(KEY_USER);
@@ -52,19 +62,25 @@ public class ModelRidePosts extends ParseObject {
 	public void setDestination(CustomGeoPoints destination){
 		put(KEY_DESTINATION, destination);
 	}
+	
+	public Date getStartTime(){
+		return getDate(KEY_START_TIME);
+	}
+	
+	public void setStartTime(Date time){
+		put(KEY_START_TIME, time);
+	}
+	
+	public int getRidePreference(){
+		return getInt(KEY_RIDE_PREFERENCE);
+	}
+	
 	/*
-	public ParseGeoPoint getOrigin(){
-		return getParseGeoPoint(KEY_ORIGIN);
+	 * the input value should be one of the Pref_* values
+	 */
+	public void setRidePreference(int preference){
+		put(KEY_RIDE_PREFERENCE, preference);
 	}
-	public void setOrigin(ParseGeoPoint origin){
-		put(KEY_ORIGIN, origin);
-	}*/
-	/*public ParseGeoPoint getDestination(){
-		return getParseGeoPoint(KEY_DESTINATION);
-	}
-	public void setDestination(ParseGeoPoint destination){
-		put(KEY_DESTINATION, destination);
-	}*/
 	
 	public static ParseQuery<ModelRidePosts> getQuery(){
 		return ParseQuery.getQuery(ModelRidePosts.class);
