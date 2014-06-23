@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- wrap_content will never work with viewPager see below for explantion
+	http://tech.leolink.net/2014/01/wrapcontent-doesnt-work-with-viewpager.html -->
+<LinearLayout 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="300dp"
+    android:gravity="top"
+    android:minHeight="200dp"
+    android:minWidth="300dp"
+    android:orientation="vertical"
+    android:padding="10dp" >
+	<com.rizzi.rizzi.utils.HeightWrappingViewPager
+	    android:id="@+id/pager"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"/>
+<!-- 
+    <android.support.v4.view.ViewPager 
+		android:id="@+id/pager"
+		android:layout_width="match_parent"
+		android:layout_height="match_parent"
+		    >
+	</android.support.v4.view.ViewPager>
+	 -->
+</LinearLayout>

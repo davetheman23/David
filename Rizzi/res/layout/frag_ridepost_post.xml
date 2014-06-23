@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:facebook="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:gravity="top"
+    android:minHeight="200dp"
+    android:minWidth="300dp"
+    android:orientation="vertical"
+    android:padding="10dp" >
+
+    <RelativeLayout
+        android:id="@+id/relativeLayout1"
+        android:layout_width="match_parent"
+        android:layout_height="55dp" >
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:gravity="left"
+            android:orientation="horizontal" >
+
+            <com.facebook.widget.ProfilePictureView
+                android:id="@+id/frag_ridepost_user_pic"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_gravity="left"
+                android:layout_marginRight="10dp"
+                android:gravity="center_horizontal"
+                facebook:preset_size="small" >
+            </com.facebook.widget.ProfilePictureView>
+
+            <com.facebook.widget.ProfilePictureView
+                android:id="@+id/frag_ridepost_friend1_pic"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_gravity="left"
+                android:layout_marginRight="10dp"
+                android:gravity="center_horizontal"
+                android:visibility="gone"
+                facebook:preset_size="small" >
+            </com.facebook.widget.ProfilePictureView>
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/button1"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:background="?android:attr/selectableItemBackground"
+            android:gravity="center"
+            android:text="+" />
+    </RelativeLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="5dp"
+        android:background="@drawable/custom_divider" >
+    </View>
+
+    <LinearLayout
+        android:id="@+id/linearLayout2"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:gravity="left"
+        android:orientation="vertical" >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
+            android:text="@string/going_from" />
+
+        <TextView
+            android:id="@+id/frag_ridepost_tv_from_address"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:background="@color/WhiteSmoke"
+            android:text="from address" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dp"
+            android:text="@string/going_to" />
+
+        <TextView
+            android:id="@+id/frag_ridepost_tv_to_address"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:background="@color/WhiteSmoke"
+            android:text="to address" />
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="5dp"
+        android:text="I prefer" />
+   <RadioGroup
+        android:id="@+id/frag_ridepost_tradioGroup1"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" 
+        android:orientation="horizontal">
+
+        <RadioButton
+            android:id="@+id/frag_ridepost_radio_ride"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="Ride" />
+        
+
+        <RadioButton
+            android:id="@+id/frag_ridepost_radio_either"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:text="Either" />
+
+        <RadioButton
+            android:id="@+id/frag_ridepost_radio_drive"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="Drive" />
+    </RadioGroup>
+
+
+    <LinearLayout
+        android:id="@+id/linearLayout3"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:gravity="center_vertical|left"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Start trip:" />
+
+        <Spinner
+            android:id="@+id/frag_ridepost_start_time"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="20dp"
+            android:layout_weight="1"
+            android:entries="@array/start_time_options"
+            android:gravity="top|left" />
+
+        <View
+            android:layout_width="1dip"
+            android:layout_height="fill_parent"
+            android:layout_marginBottom="4dip"
+            android:layout_marginTop="4dip"
+            android:background="?android:attr/dividerVertical" />
+
+        <Button
+            android:id="@+id/frag_ridepost_post"
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="?android:selectableItemBackground"
+            android:text="Post" />
+    </LinearLayout>
+
+</LinearLayout>

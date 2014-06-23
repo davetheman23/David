@@ -34,9 +34,6 @@ import com.rizzi.rizzi.R;
 
 
 public abstract class BaseListFragment extends ListFragment{
-	
-	//public static final String PREFS_NAME = "PetInAmerica_ListArticles";
-	//public static final String KEY_ARTICLE_READ = "Article_Read";
 
 	private static final String TAG = "BaseListFragment";
 	private static final String KEY_ERR = "error";
