@@ -34,11 +34,11 @@ public final class LocationUtils {
 
     // Name of shared preferences repository that stores persistent state
     public static final String SHARED_PREFERENCES = 
-            						RizziApplication.SHARED_PREF;
+            						App.SHARED_PREF;
 
     // Key for storing the "updates requested" flag in shared preferences
     public static final String KEY_UPDATES_REQUESTED =
-    		RizziApplication.APP_PACKAGE_PREFIX + ".KEY_UPDATES_REQUESTED";
+    		App.APP_PACKAGE_PREFIX + ".KEY_UPDATES_REQUESTED";
 
     /*
      * Define a request code to send to Google Play services
@@ -80,12 +80,12 @@ public final class LocationUtils {
      * @return The latitude and longitude of the current location, or null if no
      * location is available.
      */
-    public static String getLatLng(Context context, Location currentLocation) {
+    public static String getLatLng(Location currentLocation) {
         // If the location is valid
         if (currentLocation != null) {
 
             // Return the latitude and longitude as strings
-            return context.getString(
+            return App.appContext.getString(
                     R.string.latitude_longitude,
                     currentLocation.getLatitude(),
                     currentLocation.getLongitude());

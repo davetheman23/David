@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -31,12 +32,13 @@ import com.parse.ParseACL;
 import com.parse.ParseException;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
+import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 import com.rizzi.rizzi.parseclasses.CustomGeoPoints;
-import com.rizzi.rizzi.parseclasses.ModelRidePosts;
+import com.rizzi.rizzi.parseclasses.TripPosts;
 import com.rizzi.rizzi.utils.LocationUtils;
-import com.rizzi.rizzi.utils.RizziApplication;
+import com.rizzi.rizzi.utils.App;
 
 /**
  * define a pop-up dialog box for user to confirm ride posting. 
@@ -56,6 +58,9 @@ public class RidePostFragment extends Fragment{
 	private static final long MILLISECONDS_IN_SECOND = 1000;
 	private static final long SECONDS_IN_MINUTE = 60;
 	
+	// the default value for depart time flexibility
+	private static final int DEFAULT_FLEXIBILITY_IN_MIN = 15;
+	
 	//private final String addressFormat = Resources.getSystem()
 	//							.getString(R.string.address_output_string);
 	private final String addressFormat = "%1$s, %2$s, %3$s";
@@ -72,38 +77,38 @@ public class RidePostFragment extends Fragment{
 	}
 	
 
-	View rootview;
+	View rootView;
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		
-		if (rootview == null) {
-			rootview = inflater.inflate(R.layout.frag_ridepost_post, container,false);
+		if (rootView == null) {
+			// to avoid the error "The specified child already has a parent", make sure
+			// to set the attachToRoot to false
+			rootView = inflater.inflate(R.layout.frag_ridepost_post, container,false);
 		} else {
-		    ((ViewGroup) rootview.getParent()).removeView(rootview);
+		    ((ViewGroup) rootView.getParent()).removeView(rootView);
 		}
-		
-		
 		
 		/*
 		 * get references for all the widgets on the dialog box
 		 */
-		userProfilePictureView = (ProfilePictureView) rootview
+		userProfilePictureView = (ProfilePictureView) rootView
 									.findViewById(R.id.frag_ridepost_user_pic);
-		tv_FromAddress = (TextView) rootview.findViewById(
+		tv_FromAddress = (TextView) rootView.findViewById(
 											R.id.frag_ridepost_tv_from_address); 
-		tv_ToAddress = (TextView) rootview.findViewById(
+		tv_ToAddress = (TextView) rootView.findViewById(
 											R.id.frag_ridepost_tv_to_address);
-		sp_StartTime = (Spinner) rootview.findViewById(R.id.frag_ridepost_start_time);
-		rb_ride = (RadioButton)rootview.findViewById(R.id.frag_ridepost_radio_ride);
-		rb_either = (RadioButton)rootview.findViewById(R.id.frag_ridepost_radio_either);
-		rb_drive = (RadioButton)rootview.findViewById(R.id.frag_ridepost_radio_drive);
+		sp_StartTime = (Spinner) rootView.findViewById(R.id.frag_ridepost_start_time);
+		rb_ride = (RadioButton)rootView.findViewById(R.id.frag_ridepost_radio_ride);
+		rb_either = (RadioButton)rootView.findViewById(R.id.frag_ridepost_radio_either);
+		rb_drive = (RadioButton)rootView.findViewById(R.id.frag_ridepost_radio_drive);
 		
 		// initialize address boxes
 		tv_FromAddress.setText("Loading Address ...");
 		tv_ToAddress.setText("Loading Address ...");
 		// get address of origin in a background thread, display once done
-		new LocationUtils.GetAddressTask(RizziApplication.appContext, addressFormat) {
+		new LocationUtils.GetAddressTask(App.appContext, addressFormat) {
 			@Override
 			protected void onPostExecute(String formmatedAddress) {
 				tv_ToAddress.setText(formmatedAddress);
@@ -139,7 +144,7 @@ public class RidePostFragment extends Fragment{
 		}
 		
 		// set a listener for the post button
-		Button postButton = (Button) rootview.findViewById(
+		Button postButton = (Button) rootView.findViewById(
 											R.id.frag_ridepost_post);
 		postButton.setOnClickListener(new View.OnClickListener() {
 			@Override
@@ -166,14 +171,14 @@ public class RidePostFragment extends Fragment{
 				});
 			}
 		});
-		return rootview;
+		return rootView;
 	}
 	
 	@Override
     public void onDestroyView() {
         super.onDestroyView();
-        if (rootview != null) {
-            ViewGroup parentViewGroup = (ViewGroup) rootview.getParent();
+        if (rootView != null) {
+            ViewGroup parentViewGroup = (ViewGroup) rootView.getParent();
             if (parentViewGroup != null) {
                 parentViewGroup.removeAllViews();
             }
@@ -187,20 +192,28 @@ public class RidePostFragment extends Fragment{
 	 */
 	private List<ParseObject> getPostData(){
 		// get the trip planned start time
-		Date startTime = null;
+		Date departTime = null;
 		int startTimeSelPos = sp_StartTime.getSelectedItemPosition();
 		if (startTimeSelPos == Spinner.INVALID_POSITION){
 			// TODO alert user to select a start time
 		}else{
-			startTime = getStartTimeinDate(startTimeSelPos);
+			departTime = getStartTimeinDate(startTimeSelPos);
 		}
 		
+		// get the depart time flexibility
+		// TODO this should be obtained from user input
+		Long felxibility_before = DEFAULT_FLEXIBILITY_IN_MIN * SECONDS_IN_MINUTE 
+														* MILLISECONDS_IN_SECOND;
+		Long felxibility_after = felxibility_before;
+		Date departRangeBegin = new Date(departTime.getTime()-felxibility_before);
+		Date departRangeEnd = new Date(departTime.getTime()+felxibility_after);
+		
 		// get the ride preference
-		int ridePreference = ModelRidePosts.PREF_EITHER;
+		int ridePreference = TripPosts.PREF_EITHER;
 		if (rb_drive.isChecked()){
-			ridePreference = ModelRidePosts.PREF_DRIVE;
+			ridePreference = TripPosts.PREF_DRIVE;
 		}else if (rb_ride.isChecked()){
-			ridePreference = ModelRidePosts.PREF_RIDE;
+			ridePreference = TripPosts.PREF_RIDE;
 		}
 		
 		// set a geopoint object to and its wrapper class
@@ -219,12 +232,14 @@ public class RidePostFragment extends Fragment{
 		 * create a ride post class, the class needs to be defined in its own
 		 * java file and needs to be registered in RizziApplication.java 
 		 */
-		ModelRidePosts ridePosts = new ModelRidePosts();
+		TripPosts ridePosts = new TripPosts();
 		ridePosts.setUser(ParseUser.getCurrentUser());
-		ridePosts.setRideSharer1(ParseUser.getCurrentUser());
 		ridePosts.setOrigin(_orig_t);
 		ridePosts.setDestination(_dest_t);
-		ridePosts.setStartTime(startTime);
+		ridePosts.setDepartAt(departTime);
+		ridePosts.setDepartBegin(departRangeBegin);
+		ridePosts.setDepartEnd(departRangeEnd);
+		ridePosts.setDescription(" Hello, I just want to go shopping! ");
 		ridePosts.setRidePreference(ridePreference);
 		// set read/write permission for this ride post record
 		ParseACL acl = new ParseACL();
@@ -233,8 +248,8 @@ public class RidePostFragment extends Fragment{
 		
 		// create list to save all Parse objects at the same time
 		List<ParseObject> postObjects = new ArrayList<ParseObject>();
-		postObjects.add(_orig_t);
-		postObjects.add(_dest_t);
+		//postObjects.add(_orig_t);
+		//postObjects.add(_dest_t);
 		postObjects.add(ridePosts);
 		
 		return postObjects;
@@ -247,7 +262,7 @@ public class RidePostFragment extends Fragment{
 	 */
 	private Date getStartTimeinDate(int position){
 		int[] options = getResources().getIntArray(
-								R.array.start_time_options_in_mins);
+								R.array.depart_time_options_in_mins);
 		long millisecFromNow = options[position] * SECONDS_IN_MINUTE 
 											* MILLISECONDS_IN_SECOND;
 		Date now = Calendar.getInstance().getTime();

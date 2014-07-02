@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="100dp"
+    android:padding="5dp">
+ <!-- This layout has image on the Right side -->
+    <ImageView
+        android:id="@+id/post_list_profile_pic"
+        android:layout_width="100dp"
+        android:layout_height="80dp"
+        android:layout_alignParentLeft="true"
+        android:layout_centerInParent="true"
+        android:layout_alignParentTop="false"
+        android:layout_marginRight="6dip"
+        android:contentDescription="article_pic"
+        android:scaleType="fitCenter"
+        android:src="@drawable/ic_launcher"/>
+
+   <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_toRightOf="@id/post_list_profile_pic"
+        android:gravity="left|center_vertical"
+        android:orientation="vertical" >
+
+        <TextView
+	        android:id="@+id/post_list_tv_affinity_description"
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:ellipsize="marquee"
+	        android:text="(friend/3 shared friends)+(1.0 miles from you)"
+	        android:textAppearance="@android:style/TextAppearance.Small"
+	        android:textColor="@color/Black"/>
+
+        
+        <TextView 
+            android:id="@+id/post_list_tv_description"
+	            android:layout_width="wrap_content"
+	            android:layout_height="match_parent"
+	            android:text="Description"
+	            android:textAppearance="@android:style/TextAppearance.Small"
+	            android:gravity="center_vertical"
+	            android:textColor="@color/Black"/>
+    </LinearLayout>
+    
+</RelativeLayout>

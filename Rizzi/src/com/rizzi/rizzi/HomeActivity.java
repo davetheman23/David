@@ -1,13 +1,6 @@
 package com.rizzi.rizzi;
 
-import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
-import java.util.Map;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import android.app.Activity;
 import android.app.Dialog;
@@ -18,21 +11,11 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
-import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.Window;
-import android.view.WindowManager;
-import android.widget.Button;
-import android.widget.RadioButton;
-import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.facebook.widget.ProfilePictureView;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
 import com.google.android.gms.common.GooglePlayServicesUtil;
@@ -47,18 +30,11 @@ import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.CameraPosition.Builder;
 import com.google.android.gms.maps.model.LatLng;
-import com.parse.ParseACL;
-import com.parse.ParseException;
 import com.parse.ParseFacebookUtils;
-import com.parse.ParseGeoPoint;
-import com.parse.ParseObject;
 import com.parse.ParseUser;
-import com.parse.SaveCallback;
 import com.rizzi.rizzi.parseclasses.CustomGeoPoints;
-import com.rizzi.rizzi.parseclasses.ModelRidePosts;
-import com.rizzi.rizzi.utils.BaseListFragment;
+import com.rizzi.rizzi.utils.App;
 import com.rizzi.rizzi.utils.LocationUtils;
-import com.rizzi.rizzi.utils.RizziApplication;
 
 public class HomeActivity extends FragmentActivity implements 
 	com.google.android.gms.location.LocationListener,
@@ -146,7 +122,7 @@ public class HomeActivity extends FragmentActivity implements
 		@Override
 		public void onMapLongClick(LatLng point) {
 			// obtain a location object where the user clicked as destination
-			Location destination = new Location(RizziApplication.APPTAG);
+			Location destination = new Location(App.APPTAG);
 			destination.setLatitude(point.latitude);
 			destination.setLongitude(point.longitude);
 			destination.setTime(new Date().getTime());
@@ -166,14 +142,13 @@ public class HomeActivity extends FragmentActivity implements
 			/*postDialog = new PostRideFragment();
 			postDialog.setParameters(origin, destination);
 			postDialog.show(getFragmentManager(), TAG);*/
+			RideListFragment postListFragment = new RideListFragment();
+			
 			RidePostFragment postFragment = new RidePostFragment();
 			postFragment.setParameters(origin, destination);
 			
-			RidePostFragment postFragment2 = new RidePostFragment();
-			postFragment2.setParameters(origin, destination);
-			
 			popupDialog = new PopupDialogFragment();
-			popupDialog.setFragments(postFragment,postFragment2);
+			popupDialog.setFragments(postListFragment, postFragment);
 			popupDialog.show(getSupportFragmentManager(), TAG);
 		}
 	};

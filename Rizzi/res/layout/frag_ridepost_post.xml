@@ -154,7 +154,7 @@
             android:layout_height="wrap_content"
             android:layout_marginRight="20dp"
             android:layout_weight="1"
-            android:entries="@array/start_time_options"
+            android:entries="@array/depart_time_options"
             android:gravity="top|left" />
 
         <View
