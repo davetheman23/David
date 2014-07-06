@@ -77,6 +77,9 @@ public class PopupDialogFragment extends DialogFragment {
 		mPagerAdapter = new ScreenSlidePagerAdapter(getChildFragmentManager());
 		mPager.setAdapter(mPagerAdapter);
 		
+		mPager.setOffscreenPageLimit(2);
+		mPager.setCurrentItem(2);
+		
 		return viewPagerView;
 	}
 	

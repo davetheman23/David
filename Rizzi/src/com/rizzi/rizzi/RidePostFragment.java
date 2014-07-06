@@ -36,6 +36,7 @@ import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 import com.rizzi.rizzi.parseclasses.CustomGeoPoints;
+import com.rizzi.rizzi.parseclasses.ParseUserHelper;
 import com.rizzi.rizzi.parseclasses.TripPosts;
 import com.rizzi.rizzi.utils.LocationUtils;
 import com.rizzi.rizzi.utils.App;
@@ -128,11 +129,12 @@ public class RidePostFragment extends Fragment{
 		ParseUser currentUser = ParseUser.getCurrentUser();
 		// here require the Parseuser has a profile field that is saved once
 		// the user first logged in
-		if (currentUser.get("profile") != null) {
-			JSONObject userProfile = currentUser.getJSONObject("profile");
+		if (currentUser.get(ParseUserHelper.KEY_PROFILE) != null) {
+			JSONObject userProfile = currentUser.getJSONObject(
+											ParseUserHelper.KEY_PROFILE);
 			try {
-				if (userProfile.getString("facebookId") != null) {
-					String facebookId = userProfile.get("facebookId")
+				if (userProfile.getString(ParseUserHelper.KEY_FB_ID) != null) {
+					String facebookId = userProfile.get(ParseUserHelper.KEY_FB_ID)
 							.toString();
 					userProfilePictureView.setProfileId(facebookId);
 				}else{
@@ -233,7 +235,7 @@ public class RidePostFragment extends Fragment{
 		 * java file and needs to be registered in RizziApplication.java 
 		 */
 		TripPosts ridePosts = new TripPosts();
-		ridePosts.setUser(ParseUser.getCurrentUser());
+		ridePosts.setOwner(ParseUser.getCurrentUser());
 		ridePosts.setOrigin(_orig_t);
 		ridePosts.setDestination(_dest_t);
 		ridePosts.setDepartAt(departTime);

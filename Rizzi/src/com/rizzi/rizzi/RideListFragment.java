@@ -7,19 +7,23 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 
 import com.parse.FindCallback;
 import com.parse.ParseException;
+import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
+import com.rizzi.rizzi.parseclasses.ParseUserHelper;
 import com.rizzi.rizzi.parseclasses.TripPosts;
 
 public class RideListFragment extends ListFragment {
@@ -42,10 +46,6 @@ public class RideListFragment extends ListFragment {
 			((ViewGroup) rootView.getParent()).removeView(rootView);
 		}
 		
-		/*RideListAdapter adapter = new RideListAdapter(getActivity(), 
-							R.layout.post_list_row_view, mPosts);
-		getListView().setAdapter(adapter);*/
-		
 		Button btnRefresh = (Button)rootView
 									.findViewById(R.id.frag_ridepost_list_btn_refresh);
 		btnRefresh.setOnClickListener(new View.OnClickListener() {
@@ -63,18 +63,20 @@ public class RideListFragment extends ListFragment {
 	  // Create query for objects of type "TripPosts"
 	  ParseQuery<TripPosts> query = TripPosts.getQuery();
 	  
-	  Date now = Calendar.getInstance().getTime();
-	  Date departTime = now;
+	  // adding owner constraint
+	  //query.whereEqualTo(TripPosts.KEY_OWNER, ParseUser.getCurrentUser());
 	  
-	  // Restrict to cases where the author is the current user.
-	  //query.whereNotEqualTo(TripPosts.KEY_USER, ParseUser.getCurrentUser());
-	  query.whereEqualTo(TripPosts.KEY_USER, ParseUser.getCurrentUser());
-	  query.whereGreaterThanOrEqualTo(TripPosts.KEY_DEPART_RANGE_BEGIN, departTime);
-	  query.whereLessThanOrEqualTo(TripPosts.KEY_DEPART_RANGE_END, departTime);
+	  // adding time constraints
+	  Date now = Calendar.getInstance().getTime();
+	  query.whereLessThanOrEqualTo(TripPosts.KEY_DEPART_TIMERANGE_BEGIN, now);
+	  query.whereGreaterThanOrEqualTo(TripPosts.KEY_DEPART_TIMERANGE_END, now);
+	  
+	  /* join the other classes to this using include, 
+	   * further joins can use the dot notation, e.g. "include("class1.class2") */
+	  query.include(TripPosts.KEY_OWNER);
 	  
 	  // Run the query  
 	  query.findInBackground(new FindCallback<TripPosts>() {
-	 
 	    @Override
 	    public void done(List<TripPosts> postList,
 	        ParseException e) {
@@ -83,17 +85,21 @@ public class RideListFragment extends ListFragment {
 	        // and notify the adapter
 	    	mPosts.clear();
 	        for (TripPosts post : postList) {
+	        	ParseUser postOwner = post.getOwner();
+	        	String facebookId = ParseUserHelper.getFacebookId(postOwner);
 	        	Map<String, Object> postItem = new HashMap<String, Object>();
-	        	postItem.put(TripPosts.KEY_USER, post.getUser());
+	        	postItem.put(TripPosts.KEY_OWNER, post.getOwner());
 	        	postItem.put(TripPosts.KEY_ORIGIN, post.getOrigin());
 	        	postItem.put(TripPosts.KEY_DESCRIPTION, post.getDescription());
+	        	postItem.put(TripPosts.KEY_DEPART_AT, post.getDepartAt());
+	        	postItem.put(ParseUserHelper.KEY_FB_ID, facebookId);
 	        	mPosts.add(postItem);
 	        }
 	 
 	        RideListAdapter adapter = new RideListAdapter(getActivity(), 
-					R.layout.post_list_row_view, mPosts);
+					R.layout.list_post_item, mPosts);
 	        getListView().setAdapter(adapter);
-	        ((ArrayAdapter<Map<String,Object>>)getListAdapter()).notifyDataSetChanged();
+	        //((ArrayAdapter<Map<String,Object>>)getListAdapter()).notifyDataSetChanged();
 	      } else {
 	        Log.d("Post retrieval", "Error: " + e.getMessage());
 	      }

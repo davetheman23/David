@@ -31,8 +31,11 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.CameraPosition.Builder;
 import com.google.android.gms.maps.model.LatLng;
 import com.parse.ParseFacebookUtils;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.rizzi.rizzi.parseclasses.CustomGeoPoints;
+import com.rizzi.rizzi.parseclasses.TripPosts;
 import com.rizzi.rizzi.utils.App;
 import com.rizzi.rizzi.utils.LocationUtils;
 
@@ -95,9 +98,9 @@ public class HomeActivity extends FragmentActivity implements
 		// set a map long click listener
 		mGoogleMap.setOnMapLongClickListener(longClickListener);
 		
-		/*
-		 *  Create a new global location parameters object, and set request params
-		 */
+		
+		//  Create a new global location parameters object, and set request params
+		 
 		mLocationRequest = LocationRequest.create();
 		
 		mLocationRequest.setSmallestDisplacement(LocationUtils
@@ -108,9 +111,9 @@ public class HomeActivity extends FragmentActivity implements
 										.FAST_INTERVAL_CEILING_IN_MILLISECONDS);
 		mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 		
-		/*
-		 *  Create a new location client, using the enclosing class to handle callbacks
-		 */
+		
+		//Create a new location client, using the enclosing class to handle callbacks
+		 
 		mLocationClient = new LocationClient(this, this, this);
 		
 	}
@@ -138,15 +141,15 @@ public class HomeActivity extends FragmentActivity implements
 			        return;
 			}
 			
-			// create a new ride post fragment
-			/*postDialog = new PostRideFragment();
-			postDialog.setParameters(origin, destination);
-			postDialog.show(getFragmentManager(), TAG);*/
+			
+			// create a new post list fragment
 			RideListFragment postListFragment = new RideListFragment();
 			
+			// create a new ride post fragment
 			RidePostFragment postFragment = new RidePostFragment();
 			postFragment.setParameters(origin, destination);
 			
+			// create a dialog fragment to host both fragments
 			popupDialog = new PopupDialogFragment();
 			popupDialog.setFragments(postListFragment, postFragment);
 			popupDialog.show(getSupportFragmentManager(), TAG);
@@ -184,6 +187,7 @@ public class HomeActivity extends FragmentActivity implements
 	protected void onResume() {
 		super.onResume();
 		ParseUser user = ParseUser.getCurrentUser();
+		
 		if (user == null || !ParseFacebookUtils.isLinked(user)){
 			logoutUser();
 		}
@@ -267,9 +271,9 @@ public class HomeActivity extends FragmentActivity implements
     	if (servicesConnected() && mLocationClient.isConnected()){
     		
     		// enable current location layer
-    		if (mGoogleMap != null){
+    		/*if (mGoogleMap != null){
     			mGoogleMap.setMyLocationEnabled(true);
-    		}
+    		}*/
     		
     		// Get the current location
             Location currentLocation = mLocationClient.getLastLocation();

@@ -31,6 +31,7 @@ import com.parse.LogInCallback;
 import com.parse.ParseException;
 import com.parse.ParseFacebookUtils;
 import com.parse.ParseUser;
+import com.rizzi.rizzi.parseclasses.ParseUserHelper;
 
 /**
  * Login activity hosting only one login fragment, more fragments
@@ -110,18 +111,6 @@ public class LoginActivity extends FragmentActivity {
     			Bundle savedInstanceState) {    		
     		View view = inflater.inflate(R.layout.activity_login, container,false);		
     		
-    		btnLogin = (Button) view.findViewById(R.id.activity_login_btnLogin);
-    		btnLogin.setOnClickListener(new View.OnClickListener() {
-    			@Override
-    			public void onClick(View v) {
-    				onLoginButtonClicked();
-    			}
-
-    		});
-    		
-    		btnLoad = (Button) view.findViewById(R.id.activity_login_btnLoad);
-    		//tvUserInfo = (TextView) view.findViewById(R.id.activity_login_tvUsrname);
-    		
     		return view;
     	}
     	
@@ -130,8 +119,7 @@ public class LoginActivity extends FragmentActivity {
     		DlgProgress = ProgressDialog.show(
     				getActivity(), "", "Please wait! Loggin in ...", true);
     		
-    		List<String> fbPermissions = Arrays.asList("user_about_me",
-    				"user_relationships", "user_birthday", "user_location");
+    		List<String> fbPermissions = ParseUserHelper.fbPermissions;
     		ParseFacebookUtils.logIn(fbPermissions, getActivity(), new LogInCallback() {			
     			@Override
     			public void done(ParseUser user, ParseException err) {
@@ -151,7 +139,7 @@ public class LoginActivity extends FragmentActivity {
     						// Fetch Facebook user info if the session is active
     						Session session = ParseFacebookUtils.getSession();
     						if (session != null && session.isOpened()) {
-    							makeMeRequest();
+    							ParseUserHelper.fetchAndSaveUserProfile();
     						}
     					}
     					else{
@@ -172,26 +160,7 @@ public class LoginActivity extends FragmentActivity {
     			
     			@Override
     			public void onClick(View v) {
-    			        Session session = Session.getActiveSession();
-    			        if (session!=null && session.isOpened()){
-    				        Bundle params = new Bundle();
-    				        //params.putString("fields", "context.fields(mutual_friends),name,picture.type(large)");
-    				        //params.putString("fields", "permissions,email,name,picture.type(large)");
-    				        //params.putString("fields", "email");
-    				        params.putString("fields", "email,name,picture.type(large)");
-    				        Request request = new Request(session,
-    				            //"/1381039532185729",
-    				        	"/me",
-    				            params,
-    				            HttpMethod.GET,                 
-    				            new Request.Callback(){         
-    				                public void onCompleted(Response response) {
-    				                    Log.i(TAG, "Result: " + response.toString());
-    				                }                  
-    				        }); 
-    				        //Request.executeBatchAsync(request);
-    				        request.executeAsync();
-    			        }
+    			        
     			}
     		});
     	}
@@ -208,65 +177,7 @@ public class LoginActivity extends FragmentActivity {
     		startActivity(intent);
     	}
     	
-    	private void makeMeRequest() {
-    		Request request = Request.newMeRequest(ParseFacebookUtils.getSession(),
-    				new Request.GraphUserCallback() {
-    					@Override
-    					public void onCompleted(GraphUser user, Response response) {
-    						if (user != null) {
-    							// Create a JSON object to hold the profile info
-    							JSONObject userProfile = new JSONObject();
-    							try {
-    								// Populate the JSON object
-    								userProfile.put("facebookId", user.getId());
-    								userProfile.put("name", user.getName());
-    								if (user.getLocation().getProperty("name") != null) {
-    									userProfile.put("location", (String) user
-    											.getLocation().getProperty("name"));
-    								}
-    								if (user.getProperty("gender") != null) {
-    									userProfile.put("gender",
-    											(String) user.getProperty("gender"));
-    								}
-    								if (user.getBirthday() != null) {
-    									userProfile.put("birthday",
-    											user.getBirthday());
-    								}
-    								if (user.getProperty("relationship_status") != null) {
-    									userProfile
-    											.put("relationship_status",
-    													(String) user
-    															.getProperty("relationship_status"));
-    								}
-
-    								// Save the user profile info in a user property
-    								ParseUser currentUser = ParseUser
-    										.getCurrentUser();
-    								currentUser.put("profile", userProfile);
-    								currentUser.saveInBackground();
-
-    								// Show the user info
-    								//updateViewsWithProfileInfo();
-    							} catch (JSONException e) {
-    								Log.d(TAG, "Error parsing returned user data.");
-    							}
-
-    						} else if (response.getError() != null) {
-    							if ((response.getError().getCategory() == FacebookRequestError.Category.AUTHENTICATION_RETRY)
-    									|| (response.getError().getCategory() == FacebookRequestError.Category.AUTHENTICATION_REOPEN_SESSION)) {
-    								Log.d(TAG, "The facebook session was invalidated.");
-    								//onLogoutButtonClicked();
-    							} else {
-    								Log.d(TAG, "Some other error: "
-    												+ response.getError()
-    														.getErrorMessage());
-    							}
-    						}
-    					}
-    				});
-    		request.executeAsync();
-
-    	}
+    	
     	/*
     	private void showUserDetailsActivity() {
     		Intent intent = new Intent(getActivity(), UserProfileActivity.class);

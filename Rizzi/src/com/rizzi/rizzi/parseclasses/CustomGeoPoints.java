@@ -7,15 +7,27 @@ import com.parse.ParseClassName;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
 
+/**
+ * a wrapper class that wrap around a ParseGeoPoint object. 
+ * This is a workaround for Parse restriction on the number of
+ * ParseGeoPoint allowed in one class. (Currently is 1 as of
+ * 07/05/2014). when this restriction is lifted, this wrapper
+ * class may not be necessary
+ */
 @ParseClassName("CustomGeoPoints")
 public class CustomGeoPoints extends ParseObject {
 	
+	/*
+	 * constant sets for ride preferences
+	 */
 	public static final int TYPE_ORIGIN = 1;
 	public static final int TYPE_DESTINATION = 2;
 	
-	
+	/*
+	 * Keys for all fields in the class, will be used
+	 * as column names in the Parse DataStore
+	 */
 	public static final String KEY_PARSE_GEO_POINT = "parseGeoPoint";
-	
 	public static final String KEY_LOCATION_TYPE = "locationType";
 
 	public ParseGeoPoint getGeoPoint(){
@@ -29,7 +41,9 @@ public class CustomGeoPoints extends ParseObject {
 	public int getLocationType(){
 		return getInt(KEY_LOCATION_TYPE);
 	}
-	/*please use only the types defined in the class */
+	/*
+	 * the input value should be one of the TYPE_* constants
+	 */
 	public void setLocationType(int type){
 		put(KEY_LOCATION_TYPE, type);
 	}
@@ -52,7 +66,8 @@ public class CustomGeoPoints extends ParseObject {
 	}
 	
 	/**
-	 * 
+	 * convert an Android native class "Location" to a Parse native class
+	 * "ParseGeoPoint" 
 	 * @param location
 	 * @return
 	 */

@@ -8,34 +8,44 @@ import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
+/**
+ * This class defines all the constants, setters and getters
+ * methods for a TripPost class 
+ */
 @ParseClassName("TripPosts")
 public class TripPosts extends ParseObject {
-	public static int PREF_RIDE = 0;
-	public static int PREF_EITHER = 5;
-	public static int PREF_DRIVE = 10;
+	/*
+	 * constant sets for ride preferences
+	 */
+	public static final int PREF_RIDE = 0;
+	public static final int PREF_EITHER = 5;
+	public static final int PREF_DRIVE = 10;
 	
-	public static final String KEY_USER = "user";
+	/*
+	 * constant sets for status of the post
+	 */
+	public static final int STATUS_ACTIVE = 0;
+	public static final int STATUS_CLOSED = 1;
 	
-	public static final String KEY_ORIGIN = "orig";
-	
+	/*
+	 * Keys for all fields in the class, will be used
+	 * as column names in the Parse DataStore
+	 */
+	public static final String KEY_OWNER = "owner";
+	public static final String KEY_ORIGIN = "orig";	
 	public static final String KEY_DESTINATION = "dest";
-	
 	public static final String KEY_DESCRIPTION = "description";
-	
-	public static final String KEY_DEPART_AT = "depart_at";
-	
-	public static final String KEY_DEPART_RANGE_BEGIN = "depart_range_begin";
-	
-	public static final String KEY_DEPART_RANGE_END = "depart_range_end";
-	
+	public static final String KEY_DEPART_AT = "departAt";
+	public static final String KEY_DEPART_TIMERANGE_BEGIN = "departRangeBegin";
+	public static final String KEY_DEPART_TIMERANGE_END = "departRangeEnd";
 	public static final String KEY_RIDE_PREFERENCE = "ridePref";
-	
+	public static final String KEY_STATUS = "status";
 
-	public ParseUser getUser(){
-		return getParseUser(KEY_USER);
+	public ParseUser getOwner(){
+		return getParseUser(KEY_OWNER);
 	}
-	public void setUser(ParseUser user){
-		put(KEY_USER, user);
+	public void setOwner(ParseUser user){
+		put(KEY_OWNER, user);
 	}
 	
 	public CustomGeoPoints getOrigin(){
@@ -62,19 +72,19 @@ public class TripPosts extends ParseObject {
 	}
 	
 	public Date getDepartBegin(){
-		return getDate(KEY_DEPART_RANGE_BEGIN);
+		return getDate(KEY_DEPART_TIMERANGE_BEGIN);
 	}
 	
 	public void setDepartBegin(Date time){
-		put(KEY_DEPART_RANGE_BEGIN, time);
+		put(KEY_DEPART_TIMERANGE_BEGIN, time);
 	}
 	
 	public Date getDepartEnd(){
-		return getDate(KEY_DEPART_RANGE_END);
+		return getDate(KEY_DEPART_TIMERANGE_END);
 	}
 	
 	public void setDepartEnd(Date time){
-		put(KEY_DEPART_RANGE_END, time);
+		put(KEY_DEPART_TIMERANGE_END, time);
 	}
 	
 	public String getDescription(){
@@ -90,10 +100,20 @@ public class TripPosts extends ParseObject {
 	}
 	
 	/*
-	 * the input value should be one of the Pref_* values
+	 * the input value should be one of the Pref_* constants
 	 */
 	public void setRidePreference(int preference){
 		put(KEY_RIDE_PREFERENCE, preference);
+	}
+	
+	public int getStatus(){
+		return getInt(KEY_STATUS);
+	}
+	/*
+	 * the input value should be one of the STATUS_* constants
+	 */
+	public void setStatus(int status){
+		put(KEY_STATUS, status);
 	}
 	
 	public static ParseQuery<TripPosts> getQuery(){

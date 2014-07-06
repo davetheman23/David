@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:facebook="http://schemas.android.com/apk/res-auto"
     android:layout_width="fill_parent"
     android:layout_height="100dp"
     android:padding="5dp">
  <!-- This layout has image on the Right side -->
+         
     <ImageView
-        android:id="@+id/post_list_profile_pic"
+        android:id="@+id/list_post_item_iv_profile_pic"
         android:layout_width="100dp"
         android:layout_height="80dp"
         android:layout_alignParentLeft="true"
@@ -14,19 +17,19 @@
         android:layout_marginRight="6dip"
         android:contentDescription="article_pic"
         android:scaleType="fitCenter"
-        android:src="@drawable/ic_launcher"/>
-
+        android:src="@drawable/someone"/>
+ 
    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
-        android:layout_toRightOf="@id/post_list_profile_pic"
+        android:layout_toRightOf="@id/list_post_item_iv_profile_pic"
         android:gravity="left|center_vertical"
         android:orientation="vertical" >
 
         <TextView
-	        android:id="@+id/post_list_tv_affinity_description"
+	        android:id="@+id/list_post_item_tv_affinity_description"
 	        android:layout_width="fill_parent"
 	        android:layout_height="wrap_content"
 	        android:ellipsize="marquee"
@@ -36,7 +39,7 @@
 
         
         <TextView 
-            android:id="@+id/post_list_tv_description"
+            android:id="@+id/list_post_item_tv_description"
 	            android:layout_width="wrap_content"
 	            android:layout_height="match_parent"
 	            android:text="Description"
