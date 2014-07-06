@@ -51,7 +51,7 @@ public class LoginActivity extends FragmentActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        int abc = 0;
+
         if (savedInstanceState == null){
         	loginFragment = new LoginFragment();
         	getSupportFragmentManager()
@@ -87,10 +87,9 @@ public class LoginActivity extends FragmentActivity {
 
     	private static final String TAG = "LoginFragment";
     	
-    	private Button btnLogin;
     	private Dialog DlgProgress;
     	
-    	Button btnLoad;
+    	Button btnLogin;
     	TextView tvUserInfo;
 
     	@Override
@@ -109,8 +108,16 @@ public class LoginActivity extends FragmentActivity {
 		@Override
     	public View onCreateView(LayoutInflater inflater, ViewGroup container,
     			Bundle savedInstanceState) {    		
-    		View view = inflater.inflate(R.layout.activity_login, container,false);		
+    		View view = inflater.inflate(R.layout.activity_login, container,false);	
     		
+    		btnLogin = (Button) view.findViewById(R.id.activity_login_btnLogin);
+    		btnLogin.setOnClickListener(new View.OnClickListener() {
+    			@Override
+    			public void onClick(View v) {
+    				onLoginButtonClicked();
+    			}
+
+    		});
     		return view;
     	}
     	
@@ -155,14 +162,7 @@ public class LoginActivity extends FragmentActivity {
     	@Override
     	public void onViewCreated(View view, Bundle savedInstanceState) {
     		super.onViewCreated(view, savedInstanceState);
-    		
-    		btnLoad.setOnClickListener(new View.OnClickListener() {
-    			
-    			@Override
-    			public void onClick(View v) {
-    			        
-    			}
-    		});
+
     	}
 
     	@Override

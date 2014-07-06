@@ -243,6 +243,7 @@ public class RidePostFragment extends Fragment{
 		ridePosts.setDepartEnd(departRangeEnd);
 		ridePosts.setDescription(" Hello, I just want to go shopping! ");
 		ridePosts.setRidePreference(ridePreference);
+		ridePosts.setStatus(TripPosts.STATUS_ACTIVE);
 		// set read/write permission for this ride post record
 		ParseACL acl = new ParseACL();
 		 acl.setPublicReadAccess(true);

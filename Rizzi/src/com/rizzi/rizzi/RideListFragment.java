@@ -85,8 +85,11 @@ public class RideListFragment extends ListFragment {
 	        // and notify the adapter
 	    	mPosts.clear();
 	        for (TripPosts post : postList) {
+	        	// get the facebook id for displaying facebook profile pic later
 	        	ParseUser postOwner = post.getOwner();
 	        	String facebookId = ParseUserHelper.getFacebookId(postOwner);
+	        	
+	        	// collect the data to be display in the list of ride posts
 	        	Map<String, Object> postItem = new HashMap<String, Object>();
 	        	postItem.put(TripPosts.KEY_OWNER, post.getOwner());
 	        	postItem.put(TripPosts.KEY_ORIGIN, post.getOrigin());
