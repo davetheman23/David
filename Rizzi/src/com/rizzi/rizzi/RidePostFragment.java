@@ -49,7 +49,7 @@ public class RidePostFragment extends Fragment{
 	private static final String TAG = "PostRide";
 	
 	private Location mFromLocation, mToLocation;
-	private List<ParseObject> mPostObjects = null;
+	private TripPosts mPostObject = null;
 	private RadioButton rb_ride, rb_either, rb_drive;
 	private TextView tv_FromAddress = null;
 	private TextView tv_ToAddress = null;
@@ -65,6 +65,17 @@ public class RidePostFragment extends Fragment{
 	//private final String addressFormat = Resources.getSystem()
 	//							.getString(R.string.address_output_string);
 	private final String addressFormat = "%1$s, %2$s, %3$s";
+	
+	OnMatchedMeClickedListener mCallback;
+	
+	// Container must implement this interface
+    public interface OnMatchedMeClickedListener {
+    	/**
+    	 * a method to be invoked when a button is clicked, this pass the 
+    	 * event to the container that implements this listener
+    	 */
+        public void onMatchMeClicked(ParseObject constraints);
+    }
 
 	public void setParameters(Location fromLocation, Location toLocation){
 		mFromLocation = fromLocation;
@@ -75,6 +86,15 @@ public class RidePostFragment extends Fragment{
 	@Override
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
+		
+		// This makes sure that the container activity has implemented
+        // the callback interface. If not, it throws an exception
+		try{
+			mCallback = (OnMatchedMeClickedListener) getParentFragment();
+		}catch (ClassCastException e) {
+            throw new ClassCastException(getParentFragment().toString()
+                    + " must implement OnMatchedMeClickedListener");
+        }
 	}
 	
 
@@ -83,6 +103,7 @@ public class RidePostFragment extends Fragment{
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		
+		// inflate the layout if not already
 		if (rootView == null) {
 			// to avoid the error "The specified child already has a parent", make sure
 			// to set the attachToRoot to false
@@ -145,23 +166,38 @@ public class RidePostFragment extends Fragment{
 			}
 		}
 		
+		Button matchButton = (Button) rootView.findViewById(R.id.frag_ridepost_btn_match);
+		matchButton.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				mPostObject = getPostData();
+				if (mPostObject == null){
+					return;
+				}
+				// invoke an interface method
+				mCallback.onMatchMeClicked(mPostObject);
+				
+			}
+		});
+		
 		// set a listener for the post button
 		Button postButton = (Button) rootView.findViewById(
-											R.id.frag_ridepost_post);
+											R.id.frag_ridepost_btn_post);
 		postButton.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				
-				mPostObjects = getPostData();
-
-				if (mPostObjects == null){
+				mPostObject = getPostData();
+				if (mPostObject == null){
 					return;
 				}
-				/* 
-				 * Note: saveAllinBAckground will limit the number of requests made
-				 * to the server, 
+				 
+				/* Note: saveAllinBAckground will limit the number of requests made
+				 * to the server
 				 */
-				ParseObject.saveAllInBackground(mPostObjects, new SaveCallback(){
+				List<ParseObject> objectsToSave = new ArrayList<ParseObject>();
+				objectsToSave.add(mPostObject);
+				ParseObject.saveAllInBackground(objectsToSave, new SaveCallback(){
 					@Override
 					public void done(ParseException e) {
 						String message ="Post Succeeded";
@@ -192,7 +228,7 @@ public class RidePostFragment extends Fragment{
 	 * @return a list object that can be used in 
 	 *         {@link ParseObject#saveAllInBackground(List)}
 	 */
-	private List<ParseObject> getPostData(){
+	private TripPosts getPostData(){
 		// get the trip planned start time
 		Date departTime = null;
 		int startTimeSelPos = sp_StartTime.getSelectedItemPosition();
@@ -243,18 +279,13 @@ public class RidePostFragment extends Fragment{
 		ridePosts.setDepartEnd(departRangeEnd);
 		ridePosts.setDescription(" Hello, I just want to go shopping! ");
 		ridePosts.setRidePreference(ridePreference);
+		ridePosts.setStatus(TripPosts.STATUS_ACTIVE);
 		// set read/write permission for this ride post record
 		ParseACL acl = new ParseACL();
 		 acl.setPublicReadAccess(true);
 		ridePosts.setACL(acl);
 		
-		// create list to save all Parse objects at the same time
-		List<ParseObject> postObjects = new ArrayList<ParseObject>();
-		//postObjects.add(_orig_t);
-		//postObjects.add(_dest_t);
-		postObjects.add(ridePosts);
-		
-		return postObjects;
+		return ridePosts;
 	}
 	
 	/**

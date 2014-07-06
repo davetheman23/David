@@ -1,7 +1,7 @@
 package com.rizzi.rizzi;
 
 
-import com.rizzi.rizzi.utils.HeightWrappingViewPager;
+import java.util.List;
 
 import android.app.Dialog;
 import android.os.Bundle;
@@ -15,7 +15,12 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 
-public class PopupDialogFragment extends DialogFragment {
+import com.parse.ParseObject;
+import com.rizzi.rizzi.parseclasses.TripPosts;
+import com.rizzi.rizzi.utils.HeightWrappingViewPager;
+
+public class PopupDialogFragment extends DialogFragment implements 
+							RidePostFragment.OnMatchedMeClickedListener{
 	/**
      * The number of pages (wizard steps) to show in this demo.
      */
@@ -69,16 +74,15 @@ public class PopupDialogFragment extends DialogFragment {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
+		// inflate view pager
 		viewPagerView = inflater.inflate(R.layout.frag_ridepost_container_viewpager, container);
 		
+		// set up the page adapter for the view pager instance
 		mPager =(HeightWrappingViewPager) viewPagerView.findViewById(R.id.pager);
-		
-		
 		mPagerAdapter = new ScreenSlidePagerAdapter(getChildFragmentManager());
 		mPager.setAdapter(mPagerAdapter);
-		
 		mPager.setOffscreenPageLimit(2);
-		mPager.setCurrentItem(2);
+		mPager.setCurrentItem(0);
 		
 		return viewPagerView;
 	}
@@ -108,6 +112,18 @@ public class PopupDialogFragment extends DialogFragment {
             return NUM_PAGES;
         }
     }
+
+	@Override
+	public void onMatchMeClicked(ParseObject data) {
+		if (mPager != null){
+			mPager.setCurrentItem(1);
+		}
+		if (postFragment2 != null){
+			((RideListFragment)postFragment2).setQueryConstraints((TripPosts)data);
+			((RideListFragment)postFragment2).updatePostList();
+			
+		}
+	}
     
    
 

@@ -1,6 +1,9 @@
 package com.rizzi.rizzi;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 import android.app.Activity;
 import android.app.Dialog;
@@ -27,12 +30,13 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnCameraChangeListener;
 import com.google.android.gms.maps.GoogleMap.OnMapLongClickListener;
 import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.CameraPosition.Builder;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.parse.ParseFacebookUtils;
-import com.parse.ParseObject;
-import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.rizzi.rizzi.parseclasses.CustomGeoPoints;
 import com.rizzi.rizzi.parseclasses.TripPosts;
@@ -42,7 +46,8 @@ import com.rizzi.rizzi.utils.LocationUtils;
 public class HomeActivity extends FragmentActivity implements 
 	com.google.android.gms.location.LocationListener,
 	GooglePlayServicesClient.ConnectionCallbacks,
-	GooglePlayServicesClient.OnConnectionFailedListener{
+	GooglePlayServicesClient.OnConnectionFailedListener,
+	RideListFragment.onPostListLoadedListener{
 	
 	private static final String TAG = "HomeActivity";
 	
@@ -53,9 +58,18 @@ public class HomeActivity extends FragmentActivity implements
 	private final static int CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000;
 	
 	/*
-	 * a google map object 
+	 * google map objects 
 	 */
+	// the map itself
 	private GoogleMap mGoogleMap;
+	// the destination marker for the current user
+	private Marker mMyDestMarker = null;
+	// the origin and destination markers from other users
+	private List<Marker> mDestMarkers = new ArrayList<Marker>();
+	private List<Marker> mOriginMarkers = new ArrayList<Marker>();
+	
+	private final static int MARKER_TYPE_ORIGIN = 1;
+	private final static int MARKER_TYPE_DESTINATION = 2;
 	
 	/*
 	 * manage the Location Services connection and callbacks
@@ -120,15 +134,9 @@ public class HomeActivity extends FragmentActivity implements
 	
 	OnMapLongClickListener longClickListener = new OnMapLongClickListener() {
 		private PopupDialogFragment popupDialog = null;
-		private RidePostFragment postDialog = null;
 		
 		@Override
 		public void onMapLongClick(LatLng point) {
-			// obtain a location object where the user clicked as destination
-			Location destination = new Location(App.APPTAG);
-			destination.setLatitude(point.latitude);
-			destination.setLongitude(point.longitude);
-			destination.setTime(new Date().getTime());
 			
 			// the the current user location as the origin
 			Location origin = (mCurrentLocation == null) ? 
@@ -141,6 +149,24 @@ public class HomeActivity extends FragmentActivity implements
 			        return;
 			}
 			
+			// obtain a location object where the user clicked as destination
+			Location destination = new Location(App.APPTAG);
+			destination.setLatitude(point.latitude);
+			destination.setLongitude(point.longitude);
+			destination.setTime(new Date().getTime());
+			
+			// add or move the marker on the map 
+			if (mMyDestMarker == null){
+				mMyDestMarker = mGoogleMap.addMarker(
+						new MarkerOptions()
+    						.position(point)
+    						.icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_drop_pin))
+    						.title(point.toString())
+    						);
+				mMyDestMarker.setDraggable(true);
+			}else{
+				mMyDestMarker.setPosition(point);
+			}
 			
 			// create a new post list fragment
 			RideListFragment postListFragment = new RideListFragment();
@@ -151,7 +177,7 @@ public class HomeActivity extends FragmentActivity implements
 			
 			// create a dialog fragment to host both fragments
 			popupDialog = new PopupDialogFragment();
-			popupDialog.setFragments(postListFragment, postFragment);
+			popupDialog.setFragments(postFragment, postListFragment);
 			popupDialog.show(getSupportFragmentManager(), TAG);
 		}
 	};
@@ -174,14 +200,11 @@ public class HomeActivity extends FragmentActivity implements
 		}
 	}
 
-
 	@Override
 	protected void onStart() {
 		super.onStart();
 		mLocationClient.connect();
 	}
-
-
 
 	@Override
 	protected void onResume() {
@@ -199,12 +222,11 @@ public class HomeActivity extends FragmentActivity implements
 	protected void onStop() {
 		super.onStop();
 		if (mLocationClient.isConnected()){
-			stopLocationUpdates();
+			//stopLocationUpdates();
 		}
 		mLocationClient.disconnect();
 	}
 	
-
 	
 	/**
 	   * Handle results returned to this Activity by other Activities started with
@@ -270,29 +292,27 @@ public class HomeActivity extends FragmentActivity implements
     	// If Google Play services is available
     	if (servicesConnected() && mLocationClient.isConnected()){
     		
-    		// enable current location layer
-    		/*if (mGoogleMap != null){
-    			mGoogleMap.setMyLocationEnabled(true);
-    		}*/
-    		
     		// Get the current location
             Location currentLocation = mLocationClient.getLastLocation();
             
             if (currentLocation != null ){
-            final LatLng CIU = new LatLng(currentLocation.getLatitude(),
-            							currentLocation.getLongitude());
-
-            // add a marker to the location
-            //mMyLocationMarker = mGoogleMap.addMarker(new MarkerOptions()
-            //						.position(CIU).title(CIU.toString()));
-            CameraPosition cameraPosition 
-	    		= new Builder()
-	    			.target(CIU)
-	    			.zoom(15)
-	    			.tilt(45)
-	    			.build();
-            CameraUpdate camUpdate = CameraUpdateFactory
-            				.newCameraPosition(cameraPosition);
+	            final LatLng CIU = new LatLng(currentLocation.getLatitude(),
+	            							currentLocation.getLongitude());
+	            
+	            // enable current location layer
+	    		if (mGoogleMap != null){
+	    			mGoogleMap.setMyLocationEnabled(true);
+	    		}
+	
+	            // add a marker to the location
+	            CameraPosition cameraPosition 
+		    		= new Builder()
+		    			.target(CIU)
+		    			.zoom(15)
+		    			.tilt(45)
+		    			.build();
+	            CameraUpdate camUpdate = CameraUpdateFactory
+	            				.newCameraPosition(cameraPosition);
             	//move map camera to my location, either animate or non-animate 
 	            if(animateToLocationWhenFound){
 	            	mGoogleMap.animateCamera(camUpdate);
@@ -406,7 +426,7 @@ public class HomeActivity extends FragmentActivity implements
 	@Override
 	public void onConnected(Bundle bundle) {
 		mCurrentLocation = getLocation();
-		startLocationUpdates();
+		//startLocationUpdates();
 		findMyLocation(false);
 	}
 
@@ -482,6 +502,51 @@ public class HomeActivity extends FragmentActivity implements
           return mDialog;
         }
     }
+
+	/**
+	 * This method will be called when the post list is loaded 
+	 * in the ride list fragment, and markers will be shown in the map.
+	 */
+	@Override
+	public void onPostListLoaded(final List<TripPosts> posts) {
+		// markers need to be added in the UI threads only
+		HomeActivity.this.runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				clearMarkers(MARKER_TYPE_DESTINATION);
+				for (TripPosts post: posts){
+					// add pins on the map, the pins are the destinations
+					mDestMarkers.add(mGoogleMap.addMarker(
+							new MarkerOptions()
+								.position((post.getDestination().getLatlng()))
+								.icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_drop_pin_dest))
+								.title(post.get(TripPosts.KEY_DESCRIPTION).toString())
+								)
+					);
+					
+				}
+			}
+		});
+		
+	}
+	
+	/*
+	 * clear markers on the map by its types
+	 */
+	private void clearMarkers(int type){
+		switch (type){
+		case MARKER_TYPE_ORIGIN:
+			for (Marker marker : mOriginMarkers){
+				marker.remove();
+			}
+			break;
+		case MARKER_TYPE_DESTINATION:
+			for (Marker marker : mDestMarkers){
+				marker.remove();
+			}
+			break;
+		}
+	}
 	
 	
 
