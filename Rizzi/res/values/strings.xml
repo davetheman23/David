@@ -31,7 +31,7 @@
     <string name="relationship">Relationship</string>
     
     <!-- Ride post page -->
-    <string-array name="start_time_options">
+    <string-array name="depart_time_options">
 		<item>Right now</item>
 		<item>in 15 minutes</item>
 		<item>in 30 minutes</item>
@@ -39,7 +39,7 @@
 		<item>in 1 hour</item>
 		<item>in 2 hours</item>
 	</string-array>
-	<integer-array name="start_time_options_in_mins">
+	<integer-array name="depart_time_options_in_mins">
 	    <item>0</item>
 	    <item>15</item>
 	    <item>30</item>

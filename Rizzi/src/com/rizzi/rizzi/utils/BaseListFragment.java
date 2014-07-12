@@ -34,9 +34,6 @@ import com.rizzi.rizzi.R;
 
 
 public abstract class BaseListFragment extends ListFragment{
-	
-	//public static final String PREFS_NAME = "PetInAmerica_ListArticles";
-	//public static final String KEY_ARTICLE_READ = "Article_Read";
 
 	private static final String TAG = "BaseListFragment";
 	private static final String KEY_ERR = "error";
@@ -147,10 +144,9 @@ public abstract class BaseListFragment extends ListFragment{
 			@Override
 			public void onScroll(AbsListView view, int firstVisibleItem,
 					int visibleItemCount, int totalItemCount) {
+				// when the visible item reaches the last item,
 				if(firstVisibleItem + visibleItemCount == totalItemCount - 1 && totalItemCount != 0)
 				{
-					
-					// when the visible item reaches the last item, 
 					if (getListAdapter() != null){
 						mPage += 1;
 						loadListInBackground();
@@ -213,8 +209,29 @@ public abstract class BaseListFragment extends ListFragment{
 		}
 	}
 	
+	/**
+	 * add necessary parameters to the http post, for example adding userinfo 
+	 * and token to the post to facilitate URL authentication   
+	 * @param post	
+	 * @return the post with appended parameters or itself
+	 */
+	protected HttpPost addParameterstoUrlPost(HttpPost post){
+		return post;
+	}
+
+	protected void setCustomAdapter(ArrayAdapter<Map<String, Object>> customAdapter){
+		mBaseAdapter = customAdapter;
+		setListAdapter(mBaseAdapter);
+	}
+	protected ArrayAdapter<Map<String, Object>> getCustomAdapter(){
+		return mBaseAdapter;
+	}
+	
+	/**
+	 * a method to parse the JSON formatted http response 
+	 */
 	@SuppressWarnings("unchecked")
-	protected ArrayList<Map<String, Object>> ParseHttpResponseJson(
+	protected ArrayList<Map<String, Object>> parseHttpResponseJson(
 			String JSONResponse) throws JSONException{
 		// -- Parse Json object, 
 		JSONObject responseObject = null;
@@ -238,24 +255,6 @@ public abstract class BaseListFragment extends ListFragment{
 			}
 		}
 		return null;
-	}
-	
-	/**
-	 * add necessary parameters to the http post, for example adding userinfo 
-	 * and token to the post to facilitate URL authentication   
-	 * @param post	
-	 * @return the post with appended parameters or itself
-	 */
-	protected HttpPost addParameterstoUrlPost(HttpPost post){
-		return post;
-	}
-
-	protected void setCustomAdapter(ArrayAdapter<Map<String, Object>> customAdapter){
-		mBaseAdapter = customAdapter;
-		setListAdapter(mBaseAdapter);
-	}
-	protected ArrayAdapter<Map<String, Object>> getCustomAdapter(){
-		return mBaseAdapter;
 	}
 
 	private class HttpPostTask extends AsyncTask<String, Void, List<Map<String, Object>>> {
@@ -282,7 +281,7 @@ public abstract class BaseListFragment extends ListFragment{
 				JSONResponse = new BasicResponseHandler()
 				.handleResponse(response);
 				
-				return ParseHttpResponseJson(JSONResponse);
+				return parseHttpResponseJson(JSONResponse);
 			} catch (ClientProtocolException e) {
 				e.printStackTrace();
 			} catch (IOException e) {

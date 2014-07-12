@@ -88,6 +88,7 @@ public class UserProfileActivity extends Activity {
 								// Populate the JSON object
 								userProfile.put("facebookId", user.getId());
 								userProfile.put("name", user.getName());
+								
 								if (user.getLocation().getProperty("name") != null) {
 									userProfile.put("location", (String) user
 											.getLocation().getProperty("name"));
