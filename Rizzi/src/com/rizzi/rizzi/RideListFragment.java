@@ -150,7 +150,7 @@ public class RideListFragment extends ListFragment{
 				// step 1b: find app friends from other sources
 				// step 2: fetch more info about the target users, 
 				// at least mutual friend list
-            	//getMutualFriendCountAsync(friendIds);
+            	getMutualFriendCountAsync(friendIds);
 				// step 3: find the posts by these friends
 				if (friendIds != null){
 					queryRideLists();
@@ -305,7 +305,7 @@ public class RideListFragment extends ListFragment{
 	 */
 	private void getMutualFriendCountAsync(List<String> targetUserIds){
 		Session session = ParseFacebookUtils.getSession();
-        if (session!=null && session.isOpened()){
+        if (session!=null && session.isOpened() && targetUserIds.size() > 0){
         	Bundle params = new Bundle();
     		params.putString("fields", "context.fields(mutual_friends)");
     		List<Request> requests = new ArrayList<Request>(); 
@@ -321,13 +321,11 @@ public class RideListFragment extends ListFragment{
 		    		        public void onCompleted(Response response) {
 		    		        	try {
 									JSONObject json = new JSONObject(response.getRawResponse());
-									JSONArray jarray = json.getJSONArray("summary");
-				                    for(int i = 0; i < jarray.length(); i++){
-				                    	JSONObject friendObject = jarray.getJSONObject(i);
-				                    	int count = friendObject.getInt("total_count");
-				                    	
-				                    	friendMutulFriends.put(targetUserId, count);
-				                    }
+									JSONObject contextObject = json.getJSONObject("context");
+									JSONObject mutualfrdObject = contextObject.getJSONObject("mutual_friends");
+									JSONObject summaryObject = mutualfrdObject.getJSONObject("summary");
+									int count = summaryObject.getInt("total_count");
+									friendMutulFriends.put(targetUserId, count);
 								} catch (JSONException e) {
 									e.printStackTrace();
 								}
@@ -335,7 +333,8 @@ public class RideListFragment extends ListFragment{
 		    		    }
 		    		));
     			}
-    		Request.executeBatchAsync(requests);
+    		//Request.executeBatchAsync(requests);
+    		Request.executeBatchAndWait(requests);
     		
         }
 		

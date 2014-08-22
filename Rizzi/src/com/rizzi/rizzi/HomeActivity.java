@@ -27,6 +27,7 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.GoogleMap.OnCameraChangeListener;
 import com.google.android.gms.maps.GoogleMap.OnMapLongClickListener;
 import com.google.android.gms.maps.MapFragment;
@@ -111,6 +112,8 @@ public class HomeActivity extends FragmentActivity implements
 		
 		// set a map long click listener
 		mGoogleMap.setOnMapLongClickListener(longClickListener);
+		
+		MapsInitializer.initialize(this);
 		
 		
 		//  Create a new global location parameters object, and set request params
@@ -519,7 +522,7 @@ public class HomeActivity extends FragmentActivity implements
 					mDestMarkers.add(mGoogleMap.addMarker(
 							new MarkerOptions()
 								.position((post.getDestination().getLatlng()))
-								.icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_drop_pin_dest))
+								.icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_drop_pin_dest_matched))
 								.title(post.get(TripPosts.KEY_DESCRIPTION).toString())
 								)
 					);
