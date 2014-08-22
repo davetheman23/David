@@ -4,7 +4,7 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:gravity="top"
-    android:minHeight="200dp"
+    android:minHeight="300dp"
     android:minWidth="300dp"
     android:orientation="vertical"
     android:padding="10dp" >
@@ -73,7 +73,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="5dp"
-            android:text="@string/going_from" />
+            android:text="@string/going_from"
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/frag_ridepost_tv_from_address"
@@ -87,7 +88,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="5dp"
-            android:text="@string/going_to" />
+            android:text="@string/going_to"
+            android:textStyle="bold"/>
 
         <TextView
             android:id="@+id/frag_ridepost_tv_to_address"
@@ -103,7 +105,8 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:layout_marginBottom="5dp"
-        android:text="I prefer" />
+        android:text="I prefer" 
+        android:textStyle="bold"/>
    <RadioGroup
         android:id="@+id/frag_ridepost_tradioGroup1"
         android:layout_width="fill_parent"
@@ -157,20 +160,39 @@
             android:entries="@array/depart_time_options"
             android:gravity="top|left" />
 
-        <View
-            android:layout_width="1dip"
-            android:layout_height="fill_parent"
-            android:layout_marginBottom="4dip"
-            android:layout_marginTop="4dip"
-            android:background="?android:attr/dividerVertical" />
-
+        
+    </LinearLayout>
+    <View
+           android:layout_width="fill_parent"
+           android:layout_height="1dp"
+           android:layout_marginTop="20dp"
+           android:background="?android:attr/dividerVertical" />
+    <LinearLayout
+        android:layout_height="wrap_content"
+        android:layout_width="fill_parent"
+        android:orientation="horizontal">
         <Button
-            android:id="@+id/frag_ridepost_post"
-            style="?android:attr/buttonStyleSmall"
-            android:layout_width="wrap_content"
+            android:id="@+id/frag_ridepost_btn_post"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:background="?android:selectableItemBackground"
             android:text="Post" />
+         <View
+           android:layout_width="1dp"
+           android:layout_height="fill_parent"
+           android:background="?android:attr/dividerVertical" />
+	    <Button
+	         android:id="@+id/frag_ridepost_btn_match"
+	         android:layout_width="0dp"
+           	 android:layout_height="wrap_content"
+             android:layout_weight="1"
+	         android:background="?android:selectableItemBackground"
+	         android:text="Find Posts" />
     </LinearLayout>
+    <View
+         android:layout_width="fill_parent"
+         android:layout_height="1dp"
+         android:background="?android:attr/dividerVertical" />
 
 </LinearLayout>

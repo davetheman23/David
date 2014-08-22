@@ -119,4 +119,5 @@ public class TripPosts extends ParseObject {
 	public static ParseQuery<TripPosts> getQuery(){
 		return ParseQuery.getQuery(TripPosts.class);
 	}
+
 }

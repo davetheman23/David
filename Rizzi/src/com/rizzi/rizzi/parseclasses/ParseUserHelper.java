@@ -1,8 +1,10 @@
 package com.rizzi.rizzi.parseclasses;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -17,6 +19,7 @@ import com.facebook.Session;
 import com.facebook.model.GraphUser;
 import com.parse.ParseFacebookUtils;
 import com.parse.ParseUser;
+import com.rizzi.rizzi.utils.JsonHelper;
 
 /**
  * This helper class mainly helps dealing with the custom fields,
@@ -127,6 +130,8 @@ public class ParseUserHelper {
 		request.executeAsync();
 
 	}
+	
+	
 	
 	/**
 	 * This just shows an example on how to make a facebook graph api

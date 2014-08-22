@@ -3,6 +3,7 @@ package com.rizzi.rizzi.parseclasses;
 import android.location.Location;
 import android.util.Log;
 
+import com.google.android.gms.maps.model.LatLng;
 import com.parse.ParseClassName;
 import com.parse.ParseGeoPoint;
 import com.parse.ParseObject;
@@ -32,6 +33,12 @@ public class CustomGeoPoints extends ParseObject {
 
 	public ParseGeoPoint getGeoPoint(){
 		return getParseGeoPoint(KEY_PARSE_GEO_POINT);
+	}
+	
+	public LatLng getLatlng(){
+		ParseGeoPoint point = getGeoPoint();
+		return new LatLng(point.getLatitude(),
+						  point.getLongitude());
 	}
 	
 	public void setGeoPoint(ParseGeoPoint point){
